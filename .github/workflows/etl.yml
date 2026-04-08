@@ -1,0 +1,31 @@
+name: ETL Reprocess
+
+on:
+  workflow_dispatch:
+    inputs:
+      openai_key:
+        description: 'OpenAI API key for reprocessing'
+        required: true
+        type: string
+
+jobs:
+  reprocess:
+    runs-on: ubuntu-latest
+    env:
+      BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+      OPENAI_API_KEY: ${{ github.event.inputs.openai_key }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ETL reprocessing
+        run: node scripts/etl-reprocess.mjs
