@@ -67,7 +67,7 @@ async function extractFromImage(buffer: Buffer, apiKey: string): Promise<string>
 
 async function extractFromAudio(buffer: Buffer, apiKey: string): Promise<string> {
   const formData = new FormData();
-  const blob = new Blob([buffer], { type: 'audio/mp3' });
+  const blob = new Blob([new Uint8Array(buffer)], { type: 'audio/mp3' });
   formData.append('file', blob, 'audio.mp3');
   formData.append('model', 'whisper-1');
 
