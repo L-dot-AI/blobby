@@ -3,11 +3,12 @@ import { buildSummaryPrompt } from './utils';
 export async function summarizeText(
   text: string,
   apiKey: string,
-  customPrompt?: string
+  customPrompt?: string,
+  baseUrl: string = 'https://api.openai.com'
 ): Promise<string> {
   const prompt = buildSummaryPrompt(text, customPrompt);
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  const response = await fetch(`${baseUrl}/v1/chat/completions`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,

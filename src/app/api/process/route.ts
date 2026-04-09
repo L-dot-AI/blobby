@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File | null;
     const pastedText = formData.get('text') as string | null;
     const apiKey = request.headers.get('x-api-key') || '';
+    const baseUrl = request.headers.get('x-endpoint') || 'https://api.openai.com';
     const customPrompt = formData.get('prompt') as string | null;
 
     // Validate API key
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Silver: extract text
-    const extractedText = await extractText(fileType, fileBuffer, apiKey);
+    const extractedText = await extractText(fileType, fileBuffer, apiKey, baseUrl);
     const silverBlob = await put(
       blobPath('silver', `${id}-extracted.txt`),
       Buffer.from(extractedText, 'utf-8'),
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Gold: summarize
-    const summary = await summarizeText(extractedText, apiKey, customPrompt || undefined);
+    const summary = await summarizeText(extractedText, apiKey, customPrompt || undefined, baseUrl);
     const goldBlob = await put(
       blobPath('gold', `${id}-summary.txt`),
       Buffer.from(summary, 'utf-8'),

@@ -15,6 +15,7 @@ interface ProcessResult {
 
 export default function Home() {
   const [apiKey, setApiKey] = useState('');
+  const [endpoint, setEndpoint] = useState('https://api.openai.com');
   const [file, setFile] = useState<File | null>(null);
   const [pastedText, setPastedText] = useState('');
   const [customPrompt, setCustomPrompt] = useState('');
@@ -37,7 +38,7 @@ export default function Home() {
     setResult(null);
 
     if (!apiKey.trim()) {
-      setError('Please enter your OpenAI API key.');
+      setError('Please enter your API key.');
       return;
     }
 
@@ -60,7 +61,7 @@ export default function Home() {
 
       const response = await fetch('/api/process', {
         method: 'POST',
-        headers: { 'x-api-key': apiKey },
+        headers: { 'x-api-key': apiKey, 'x-endpoint': endpoint },
         body: formData,
       });
 
@@ -88,6 +89,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': apiKey,
+          'x-endpoint': endpoint,
         },
         body: JSON.stringify({
           extractedText: result.extractedText,
@@ -115,7 +117,7 @@ export default function Home() {
 
       {/* API Key */}
       <div className="card">
-        <h2>1. Enter your OpenAI API key</h2>
+        <h2>1. Enter your API key</h2>
         <label htmlFor="apiKey">API Key (stored in browser only)</label>
         <input
           id="apiKey"
@@ -123,6 +125,19 @@ export default function Home() {
           placeholder="sk-..."
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
+        />
+      </div>
+
+      {/* Endpoint */}
+      <div className="card">
+        <h2>API Endpoint (optional)</h2>
+        <label htmlFor="endpoint">Default: OpenAI. Use http://localhost:8080 for local llama.cpp</label>
+        <input
+          id="endpoint"
+          type="text"
+          placeholder="https://api.openai.com"
+          value={endpoint}
+          onChange={(e) => setEndpoint(e.target.value)}
         />
       </div>
 

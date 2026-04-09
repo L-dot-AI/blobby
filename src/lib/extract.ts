@@ -3,17 +3,18 @@ import { SupportedFileType } from './utils';
 export async function extractText(
   fileType: SupportedFileType,
   fileBuffer: Buffer,
-  apiKey?: string
+  apiKey?: string,
+  baseUrl: string = 'https://api.openai.com'
 ): Promise<string> {
   switch (fileType) {
     case 'pdf':
       return extractFromPdf(fileBuffer);
     case 'image':
       if (!apiKey) throw new Error('API key required for image extraction');
-      return extractFromImage(fileBuffer, apiKey);
+      return extractFromImage(fileBuffer, apiKey, baseUrl);
     case 'audio':
       if (!apiKey) throw new Error('API key required for audio extraction');
-      return extractFromAudio(fileBuffer, apiKey);
+      return extractFromAudio(fileBuffer, apiKey, baseUrl);
     case 'text':
       return fileBuffer.toString('utf-8');
     default:
@@ -27,9 +28,9 @@ async function extractFromPdf(buffer: Buffer): Promise<string> {
   return result.text;
 }
 
-async function extractFromImage(buffer: Buffer, apiKey: string): Promise<string> {
+async function extractFromImage(buffer: Buffer, apiKey: string, baseUrl: string): Promise<string> {
   const base64 = buffer.toString('base64');
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  const response = await fetch(`${baseUrl}/v1/chat/completions`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -65,13 +66,13 @@ async function extractFromImage(buffer: Buffer, apiKey: string): Promise<string>
   return data.choices[0].message.content;
 }
 
-async function extractFromAudio(buffer: Buffer, apiKey: string): Promise<string> {
+async function extractFromAudio(buffer: Buffer, apiKey: string, baseUrl: string): Promise<string> {
   const formData = new FormData();
   const blob = new Blob([new Uint8Array(buffer)], { type: 'audio/mp3' });
   formData.append('file', blob, 'audio.mp3');
   formData.append('model', 'whisper-1');
 
-  const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+  const response = await fetch(`${baseUrl}/v1/audio/transcriptions`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,

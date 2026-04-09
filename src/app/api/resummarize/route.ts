@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { extractedText, prompt } = body;
     const apiKey = request.headers.get('x-api-key') || '';
+    const baseUrl = request.headers.get('x-endpoint') || 'https://api.openai.com';
 
     if (!validateApiKey(apiKey)) {
       return NextResponse.json(
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     const id = generateId();
-    const summary = await summarizeText(extractedText, apiKey, prompt || undefined);
+    const summary = await summarizeText(extractedText, apiKey, prompt || undefined, baseUrl);
 
     const goldBlob = await put(
       blobPath('gold', `${id}-resummarized.txt`),
