@@ -83,6 +83,15 @@ describe('validateApiKey', () => {
   it('handles whitespace', () => {
     expect(validateApiKey('  sk-abc123456789012345678  ')).toBe(true);
   });
+
+  it('skips validation for local endpoints', () => {
+    expect(validateApiKey('', true)).toBe(true);
+    expect(validateApiKey('any-key', true)).toBe(true);
+  });
+
+  it('still validates for non-local endpoints', () => {
+    expect(validateApiKey('bad-key', false)).toBe(false);
+  });
 });
 
 describe('buildSummaryPrompt', () => {

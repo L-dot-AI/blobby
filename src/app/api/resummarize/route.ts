@@ -10,7 +10,8 @@ export async function POST(request: NextRequest) {
     const apiKey = request.headers.get('x-api-key') || '';
     const baseUrl = request.headers.get('x-endpoint') || 'https://api.openai.com';
 
-    if (!validateApiKey(apiKey)) {
+    const isLocal = baseUrl !== 'https://api.openai.com';
+    if (!validateApiKey(apiKey, isLocal)) {
       return NextResponse.json(
         { error: 'Invalid or missing API key.' },
         { status: 400 }

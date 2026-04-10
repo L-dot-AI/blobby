@@ -24,7 +24,8 @@ export function validateFileSize(size: number): boolean {
   return size > 0 && size <= MAX_FILE_SIZE;
 }
 
-export function validateApiKey(key: string): boolean {
+export function validateApiKey(key: string, isLocalEndpoint: boolean = false): boolean {
+  if (isLocalEndpoint) return true;
   if (!key || typeof key !== 'string') return false;
   const trimmed = key.trim();
   return trimmed.startsWith('sk-') && trimmed.length > 20;

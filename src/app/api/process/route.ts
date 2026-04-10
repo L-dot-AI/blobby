@@ -14,7 +14,8 @@ export async function POST(request: NextRequest) {
     const customPrompt = formData.get('prompt') as string | null;
 
     // Validate API key
-    if (!validateApiKey(apiKey)) {
+    const isLocal = baseUrl !== 'https://api.openai.com';
+    if (!validateApiKey(apiKey, isLocal)) {
       return NextResponse.json(
         { error: 'Invalid or missing API key. Key must start with sk- and be at least 20 characters.' },
         { status: 400 }
